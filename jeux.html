@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Memory STI - Mode Score & Compétition</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background-color: #f0f2f5; margin: 0; padding: 10px; }
+        .header-game { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; }
+        .stat-box { background: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .stat-label { display: block; font-size: 14px; color: #666; text-transform: uppercase; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #2c3e50; }
+        #timer-val { color: #e74c3c; }
+        #score-val { color: #27ae60; }
+        .game-container { display: grid; grid-template-columns: repeat(4, 100px); gap: 6px; justify-content: center; }
+        .card { width: 100px; height: 100px; background-color: #34495e; color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border-radius: 8px; font-weight: bold; padding: 8px; transition: 0.3s; box-sizing: border-box; }
+        .card.flipped { background-color: #ffffff; color: #2c3e50; border: 3px solid #3498db; }
+        .card.matched { background-color: #2ecc71 !important; color: white; border: none; visibility: visible; }
+        button { padding: 12px 30px; font-size: 16px; cursor: pointer; background-color: #3498db; color: white; border: none; border-radius: 5px; margin-top: 25px; transition: 0.2s; }
+        button:hover { background-color: #2980b9; }
+        /*#result { margin-top: 20px; padding: 20px; border-radius: 8px; text-align: center; font-weight: bold; display: none; }*/
+        .btn-nav { display: inline-block; margin-top: 20px; text-decoration: none; color: #3498db; font-weight: bold; border: 2px solid #3498db; padding: 8px 20px; border-radius: 50px; }
+        .btn-nav:hover { background: #3498db; color: white; }
+    </style>
+</head>
+<body>
+
+    <h1>Challenge Base de Données (3ème STI)</h1>
+    
+    <div class="header-game">
+        <div class="stat-box">
+            <span class="stat-label">Chrono</span>
+            <span id="timer-val" class="stat-value">20s</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Score Actuel</span>
+            <span id="score-val" class="stat-value">0</span>
+        </div>
+    </div>
+
+    <div class="game-container" id="game-board"></div>
+    <button onclick="startGame()">Réinitialiser le défi</button><br>
+
+
+        <a href="seance1.html" class="btn-nav">⬅️ Retour au cours</a>
+        <a href="quizseance1.html" class="btn-nav">🎯 Aller aux quiz</a>
+
+
+    <script>
+        // Termes issus des sources (Mon_cours_BD)
+        const pairs = [
+            { a: "Table", b: "Entité" },           // Source [1]
+            { a: "Colonne", b: "Attribut" },       // Source [1]
+            { a: "Ligne", b: "Uplet" },             // Source [1]
+            { a: "SGBD", b: "Logiciel de gestion de base de données" },// Source [2]
+            { a: "Contrainte referentielle", b: "Relation" },        // Source [1]
+            { a: "Intégrité", b: "Cohérence" },     // Source [3]
+            { a: "Contrainte de domaine", b: "Check" },// Source [1]
+            { a: "BD", b: "Ensemble structuré" }    // Source [4]
+        ];
+
+        let cards = [];
+        let flippedCards = [];
+        let score = 0;
+        let matchedPairs = 0;
+        let canPlay = false;
+
+        function updateScore(points) {
+            score += points;
+            if (score < 0) score = 0;
+            document.getElementById('score-val').innerText = score;
+        }
+
+        function startGame() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+            cards = [];
+            flippedCards = [];
+            score = 0;
+            matchedPairs = 0;
+            canPlay = false;
+            updateScore(0);
+
+            let gameItems = [];
+            pairs.forEach(p => {
+                gameItems.push({ text: p.a, match: p.b });
+                gameItems.push({ text: p.b, match: p.a });
+            });
+            gameItems.sort(() => 0.5 - Math.random());
+
+            gameItems.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('card', 'flipped'); 
+                card.dataset.text = item.text;
+                card.dataset.match = item.match;
+                card.innerText = item.text;
+                card.onclick = () => flipCard(card);
+                board.appendChild(card);
+                cards.push(card);
+            });
+
+            let timeLeft = 20;
+            const countdown = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-val').innerText = timeLeft + "s";
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    hideAllCards();
+                }
+            }, 1000);
+        }
+
+        function hideAllCards() {
+            cards.forEach(card => {
+                card.classList.remove('flipped');
+                card.innerText = "?";
+            });
+            document.getElementById('timer-val').innerText = "GO !";
+            canPlay = true;
+        }
+
+        function flipCard(card) {
+            if (!canPlay || flippedCards.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+            card.classList.add('flipped');
+            card.innerText = card.dataset.text;
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [c1, c2] = flippedCards;
+            if (c1.dataset.text === c2.dataset.match) {
+                c1.classList.add('matched');
+                c2.classList.add('matched');
+                updateScore(20);
+                matchedPairs++;
+                flippedCards = [];
+                if (matchedPairs === pairs.length) {
+                    alert("Terminé ! Score final : " + score);
+                }
+            } else {
+                updateScore(-5);
+                setTimeout(() => {
+                    c1.classList.remove('flipped');
+                    c2.classList.remove('flipped');
+                    c1.innerText = "?";
+                    c2.innerText = "?";
+                    flippedCards = [];
+                }, 800);
+            }
+        }
+
+        window.onload = startGame;
+    </script>
+</body>
+</html>

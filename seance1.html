@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Séance 1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <h1>📘 Séance 1 : Introduction aux BD</h1>
+   <p id="score"><a href="index.html" id="acc">accueil</a></p>
+</header>
+<!--<video controls>
+  <source src="bd.mp4" type="video/mp4">
+</video>-->
+
+<section class="container">
+  <div class="card">
+<a href="https://youtu.be/KF4NDdDwDTc" target="_blank">Regarder video</video></a>
+  </div>
+  <!-- Question 1 -->
+  <div class="card">
+    <h3>❓ Qu'est-ce qu'une base de données ?</h3>
+    <button onclick="show(1)">Afficher réponse</button>
+    <div id="rep1" class="hidden">
+      Une <strong>Base de Données</strong> est un ensemble de données relatif à un domaine précis, caractérisé par être :
+        <ul>
+            <li><span class="highlight">Structuré</span> : Organisé sous forme de tables.</li>
+            <li><span class="highlight">Exhaustif</span> : Contient toutes les informations nécessaires.</li>
+            <li><span class="highlight">Non redondant</span> : Sans répétitions inutiles.</li>
+            <li><span class="highlight">Persistant</span> : Stocké de manière durable.</li>
+        </ul>
+        <img src="images/def_bd.png">
+      </div>
+  </div>
+
+  <!-- Question 2 -->
+  <div class="card">
+    <h3>❓ Qu'est-ce qu'un SGBD ?</h3>
+    <button onclick="show(2)">Afficher réponse</button>
+    <div id="rep2" class="hidden">
+     <h4>2. Le SGBD : Le Chef d'Orchestre</h4>
+        <img src="images/def_sgbd.png">
+    </div>
+  </div>
+
+
+  <!-- Question 3 -->
+  <div class="card">
+    <h3>❓ Qu'est-ce qu'une table ?</h3>
+    <button onclick="show(3)">Afficher réponse</button>
+    <div id="rep3" class="hidden">
+     <p>Une table (ou <span class="highlight">Entité</span>) est un tableau organisé en :</p>
+        <img src="images/table.png" class="image1">
+      </div>
+  </div>
+
+  <!-- Jeu simple -->
+   <table><tr><td colspan="2"><h2>💻 contrainte d'integrité</h2></td></tr>
+ <tr><td><div class="card">
+    
+ <h3> <strong> L'intégrité de table (ou d'entité) : </strong> &#128273 </h3>
+ <button onclick="show(4)">Afficher réponse</button>
+    <div id="rep4" class="hidden">
+       <img src="images/ct_table.png">
+    </div>
+  </div>
+ </td>
+ <td><div class="card">
+    
+ <h3> <strong> Lintégrité des domaines :</strong> </h3>
+ <button onclick="show(5)">Afficher réponse</button>
+    <div id="rep5" class="hidden">
+        
+       
+      <ul><li><strong>contraintes des types : </strong> Chaque champ doit recevoir une donnée correspondant au type défini (ex: INT, DATE, VARCHAR)</li>
+            <li><strong> Contraintes de valeurs :</strong> On utilise la contrainte CHECK pour limiter les valeurs possibles. Par exemple, dans votre TP, la note doit obligatoirement être comprise entre 0 et 20</li>
+<li> <strong> Caractère obligatoire :</strong> La contrainte NOT NULL impose que certains champs, comme le nom ou le prénom, ne soient jamais laissés vides
+</li>
+      </ul>
+      <img src="images/ct_domaine.png" class="image1">
+    </div>
+  </div></td>
+ </tr>
+  <tr><td colspan="2"><div class="card">
+      <h2>💻<strong>Lintégrité referentielle : </h2>
+       <button onclick="show(6)">Afficher réponse</button>
+    <div id="rep6" class="hidden">
+      
+      Elle assure la validité des liens et de la communication entre les différentes tables de la base de données
+    
+          <img src="images/ct_ref.png" class="image1">
+                <ul>
+            <li><strong> Cohérence des liens</strong> : Par exemple, dans la table DEVOIR, on ne peut pas insérer un Id_elv s'il n'existe pas déjà dans la table ELEVE
+. Cela garantit que les relations entre les entités (Élèves, Matières, Devoirs ou Clients et Chambres) restent toujours logiques et sécurisées</li>
+
+          </ul>
+    </div>
+    </div></td></tr>
+</table>
+
+    
+</section>
+ <center>
+        <a href="jeux.html" class="link-game">🎮 Passer aux jeux de mémorisation !</a>
+         <a href="quizseance1.html" class="link-game">🎯 Passer aux quiz!</a>
+    </center>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Bonus Arcade</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #50e3c2;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --bg: #ebf2fa;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--dark); padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .game-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); border-top: 6px solid var(--primary); }
+        h1 { text-align: center; color: var(--primary); }
+        h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
+
+        /* Jeu 1: L'Intrus */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .opt-btn { background: #f8f9fa; border: 2px solid #ddd; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .opt-btn:hover { border-color: var(--primary); background: #eef5ff; }
+
+        /* Jeu 2: La Machine à Requêtes */
+        .sql-zone { background: #2d3436; color: #fab1a0; padding: 15px; border-radius: 8px; font-family: monospace; min-height: 40px; margin: 10px 0; display: flex; align-items: center; justify-content: center; }
+
+        /* Jeu 3: Flash Cards */
+        .flash-card { height: 150px; perspective: 1000px; cursor: pointer; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flash-card.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-weight: bold; padding: 10px; box-sizing: border-box; }
+        .card-front { background: var(--primary); color: white; }
+        .card-back { background: var(--secondary); color: var(--dark); transform: rotateY(180deg); }
+
+        #feedback { font-weight: bold; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎮 SQL BONUS ARCADE</h1>
+
+    <!-- JEU 1: L'INTRUS DE L'ARCHITECTURE -->
+    <div class="game-card">
+        <h2>🔍 Jeu 1 : L'Intrus de la Définition</h2>
+        <p>Selon le cours, lequel de ces mots <b>ne définit PAS</b> une Base de Données ?</p>
+        <div class="options-grid">
+            <button class="opt-btn" onclick="checkIntrus(false)">Structuré</button>
+            <button class="opt-btn" onclick="checkIntrus(true)">Redondant</button>
+            <button class="opt-btn" onclick="checkIntrus(false)">Persistant</button>
+            <button class="opt-btn" onclick="checkIntrus(false)">Exhaustif</button>
+        </div>
+        <p id="feedback-intrus"></p>
+    </div>
+
+    <!-- JEU 2: LE DÉFI "POSTE FRONTALIER" (TP2) -->
+    <div class="game-card">
+        <h2>🏨 Jeu 2 : Mission Poste_Frontalier</h2>
+        <p>Complétez la contrainte pour la colonne <b>Genre</b> (M ou F) de la table VOYAGEUR :</p>
+        <div class="sql-zone">
+            ALTER TABLE VOYAGEUR ADD CONSTRAINT chk_g CHECK (Genre <span id="gap">___</span>);
+        </div>
+        <div class="options-grid">
+            <button class="opt-btn" onclick="checkGap('LIKE M-F')">LIKE 'M-F'</button>
+            <button class="opt-btn" onclick="checkGap('IN (\'M\', \'F\')')">IN ('M', 'F')</button>
+            <button class="opt-btn" onclick="checkGap('= M or F')">= 'M' or 'F'</button>
+        </div>
+        <p id="feedback-gap"></p>
+    </div>
+
+    <!-- JEU 3: FLASH CARDS SGBD -->
+    <div class="game-card">
+        <h2>⚡ Jeu 3 : Flash Cards SGBD</h2>
+        <p>Cliquez sur la carte pour voir la fonction correspondante (Définition vs Manipulation) :</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="flash-card" onclick="this.classList.toggle('flipped')">
+                <div class="card-inner">
+                    <div class="card-front">AJOUT / SUPPRESSION</div>
+                    <div class="card-back">MANIPULATION (LMD)</div>
+                </div>
+            </div>
+            <div class="flash-card" onclick="this.classList.toggle('flipped')">
+                <div class="card-inner">
+                    <div class="card-front">CRÉATION STRUCTURE</div>
+                    <div class="card-back">DÉFINITION (LDD)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="tp2_sql.html" style="text-decoration: none; color: var(--primary); font-weight: bold;">⬅️ Retour au TP2</a>
+    </div>
+</div>
+
+<script>
+    // Jeu 1
+    function checkIntrus(isCorrect) {
+        const fb = document.getElementById('feedback-intrus');
+        if(isCorrect) {
+            fb.innerHTML = "🏆 Bravo ! Une BD doit être <b>Non Redondante</b>.";
+            fb.style.color = "var(--success)";
+        } else {
+            fb.innerText = "❌ Faux. Ce terme fait partie des 5 piliers d'une BD.";
+            fb.style.color = "var(--error)";
+        }
+    }
+
+    // Jeu 2
+    function checkGap(val) {
+        const fb = document.getElementById('feedback-gap');
+        const gap = document.getElementById('gap');
+        if(val === "IN ('M', 'F')") {
+            gap.innerText = val;
+            fb.innerText = "✅ Correct ! C'est la syntaxe du TP2 pour limiter le genre.";
+            fb.style.color = "var(--success)";
+        } else {
+            fb.innerText = "❌ Mauvaise syntaxe SQL pour une contrainte de liste.";
+            fb.style.color = "var(--error)";
+        }
+    }
+</script>
+
+</body>
+</html>
+```
+

@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Défi SQL : Le Puzzle LDD</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #e67e22;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f3f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        .score-board { font-size: 1.2em; font-weight: bold; color: var(--success); margin-bottom: 20px; }
+        
+        .mission {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--secondary);
+            font-style: italic;
+        }
+
+        .drop-zone {
+            min-height: 60px;
+            border: 2px dashed var(--secondary);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            justify-content: center;
+            background: #fafafa;
+            margin-bottom: 20px;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .word {
+            background: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+        }
+
+        .word:hover { transform: scale(1.1); background: var(--secondary); }
+
+        .controls { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+        
+        button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-check { background: var(--success); color: white; }
+        .btn-reset { background: #95a5a6; color: white; }
+        
+        #feedback { margin-top: 20px; font-weight: bold; min-height: 24px; }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <h1>⚔️ Défi SQL Puzzle</h1>
+    <div class="score-board">Niveau : <span id="level">1</span>/4 | Score : <span id="score">0</span></div>
+
+    <div class="mission" id="mission-text">Mission : Crée la base de données "Gestion_ELEVE".</div>
+
+    <div class="drop-zone" id="drop-zone" onclick="returnWord(event)">
+        <!-- Les mots déposés ici -->
+    </div>
+
+    <div class="word-bank" id="word-bank">
+        <!-- Les mots à choisir -->
+    </div>
+
+    <div id="feedback"></div>
+
+    <div class="controls">
+        <button class="btn-check" onclick="checkAnswer()">Vérifier la commande</button>
+        <button class="btn-reset" onclick="resetLevel()">Réinitialiser</button>
+    </div>
+</div>
+
+<script>
+    const levels = [
+        {
+            mission: "Crée la base de données 'Gestion_ELEVE'.",
+            words: ["CREATE", "DATABASE", "Gestion_ELEVE", ";"],
+            answer: "CREATE DATABASE Gestion_ELEVE ;"
+        },
+        {
+            mission: "Ajoute l'attribut 'coefficient' (entier) à la table MATIERE.",
+            words: ["ALTER", "TABLE", "MATIERE", "ADD", "coefficient", "INT", ";"],
+            answer: "ALTER TABLE MATIERE ADD coefficient INT ;"
+        },
+        {
+            mission: "Modifie le type de 'coefficient' en DECIMAL.",
+            words: ["ALTER", "TABLE", "MATIERE", "MODIFY", "coefficient", "DECIMAL", ";"],
+            answer: "ALTER TABLE MATIERE MODIFY coefficient DECIMAL ;"
+        },
+        {
+            mission: "Supprime la colonne 'date_naiss' de la table ELEVE.",
+            words: ["ALTER", "TABLE", "ELEVE", "DROP", "COLUMN", "date_naiss", ";"],
+            answer: "ALTER TABLE ELEVE DROP COLUMN date_naiss ;"
+        }
+    ];
+
+    let currentLevel = 0;
+    let score = 0;
+
+    function initLevel() {
+        const level = levels[currentLevel];
+        document.getElementById('level').innerText = currentLevel + 1;
+        document.getElementById('mission-text').innerText = "Mission : " + level.mission;
+        document.getElementById('drop-zone').innerHTML = '';
+        document.getElementById('feedback').innerText = '';
+        
+        const bank = document.getElementById('word-bank');
+        bank.innerHTML = '';
+        
+        // Mélanger les mots
+        const shuffledWords = [...level.words].sort(() => Math.random() - 0.5);
+        
+        shuffledWords.forEach(w => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.innerText = w;
+            span.onclick = () => moveToZone(span);
+            bank.appendChild(span);
+        });
+    }
+
+    function moveToZone(el) {
+        document.getElementById('drop-zone').appendChild(el);
+    }
+
+    function returnWord(event) {
+        if(event.target.className === 'word') {
+            document.getElementById('word-bank').appendChild(event.target);
+        }
+    }
+
+    function checkAnswer() {
+        const droppedWords = Array.from(document.getElementById('drop-zone').children)
+                                 .map(el => el.innerText)
+                                 .join(' ');
+        
+        const feedback = document.getElementById('feedback');
+        
+        if (droppedWords === levels[currentLevel].answer) {
+            score += 50;
+            document.getElementById('score').innerText = score;
+            feedback.innerText = "✅ Bravo ! Commande SQL correcte.";
+            feedback.style.color = "var(--success)";
+            
+            setTimeout(() => {
+                currentLevel++;
+                if(currentLevel < levels.length) {
+                    initLevel();
+                } else {
+                    document.querySelector('.game-card').innerHTML = `<h1>🏆 Félicitations !</h1><p>Tu as maîtrisé le LDD SQL avec un score de ${score} points.</p><br><a href="seance2_2.html" style="color:var(--secondary); font-weight:bold;">Retour au cours</a>`;
+                }
+            }, 1500);
+        } else {
+            feedback.innerText = "❌ Ce n'est pas la bonne syntaxe. Réessaie !";
+            feedback.style.color = "#e74c3c";
+            score = Math.max(0, score - 10);
+            document.getElementById('score').innerText = score;
+        }
+    }
+
+    function resetLevel() {
+        initLevel();
+    }
+
+    window.onload = initLevel;
+</script>
+
+</body>
+</html>
+```
+

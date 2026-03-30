@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade LMD : Puzzle & Mémoire SQL</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { color: var(--primary); border-bottom: 3px solid var(--secondary); padding-bottom: 10px; }
+        h2 { color: var(--secondary); font-size: 1.2em; }
+
+        /* Style Puzzle */
+        .drop-zone {
+            min-height: 60px;
+            border: 2px dashed var(--secondary);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            justify-content: center;
+            background: #fafafa;
+            margin: 20px 0;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 15px;
+            background: #eee;
+            border-radius: 8px;
+        }
+
+        .word {
+            background: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+        }
+
+        .word:hover { background: var(--secondary); transform: translateY(-2px); }
+
+        /* Style Memory */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .card {
+            height: 80px;
+            background: var(--primary);
+            color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .card.flipped {
+            background: white;
+            color: var(--primary);
+            border-color: var(--secondary);
+        }
+
+        .card.matched {
+            background: var(--success);
+            color: white;
+            cursor: default;
+        }
+
+        button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            background: var(--success);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .nav-link {
+            margin-top: 20px;
+            text-decoration: none;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        #feedback-puzzle { margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- JEU 1 : LE PUZZLE DE SÉLECTION -->
+    <div class="game-container">
+        <h1>🧩 Le Puzzle SQL (LMD)</h1>
+        <p><b>Mission :</b> Reconstruis la requête pour "Afficher les noms des élèves qui commencent par M".</p>
+        
+        <div class="drop-zone" id="drop-zone" onclick="returnWord(event)">
+            <!-- Mots déposés ici -->
+        </div>
+
+        <div class="word-bank" id="word-bank">
+            <span class="word" onclick="moveToZone(this)">SELECT</span>
+            <span class="word" onclick="moveToZone(this)">nom</span>
+            <span class="word" onclick="moveToZone(this)">FROM</span>
+            <span class="word" onclick="moveToZone(this)">ELEVE</span>
+            <span class="word" onclick="moveToZone(this)">WHERE</span>
+            <span class="word" onclick="moveToZone(this)">nom</span>
+            <span class="word" onclick="moveToZone(this)">LIKE 'M%'</span>
+            <span class="word" onclick="moveToZone(this)">;</span>
+        </div>
+
+        <div id="feedback-puzzle"></div>
+        <button onclick="checkPuzzle()">Vérifier la requête</button>
+    </div>
+
+    <!-- JEU 2 : MÉMOIRE DES COMMANDES -->
+    <div class="game-container">
+        <h1>🧠 Mémoire des Commandes LMD</h1>
+        <p>Associe la commande SQL à son action correspondante.</p>
+        <div class="memory-grid" id="memory-grid">
+            <!-- Cartes générées par JS -->
+        </div>
+        <button onclick="initMemory()">Recommencer le jeu</button>
+    </div>
+
+    <a href="seance3.html" class="nav-link">⬅️ Retour à la Séance 3</a>
+
+    <script>
+        // --- LOGIQUE PUZZLE ---
+        function moveToZone(el) {
+            document.getElementById('drop-zone').appendChild(el);
+        }
+
+        function returnWord(event) {
+            if(event.target.className === 'word') {
+                document.getElementById('word-bank').appendChild(event.target);
+            }
+        }
+
+        function checkPuzzle() {
+            const result = Array.from(document.getElementById('drop-zone').children)
+                                .map(el => el.innerText)
+                                .join(' ');
+            const feedback = document.getElementById('feedback-puzzle');
+            
+            // Syntaxe attendue selon source
+            if (result === "SELECT nom FROM ELEVE WHERE nom LIKE 'M%' ;") {
+                feedback.innerText = "✅ Excellent ! Requête correcte.";
+                feedback.style.color = "var(--success)";
+            } else {
+                feedback.innerText = "❌ La syntaxe n'est pas tout à fait correcte. Réessaie !";
+                feedback.style.color = "var(--danger)";
+            }
+        }
+
+        // --- LOGIQUE MEMORY ---
+        const pairs = [
+            { cmd: "SELECT", act: "Consultation" },
+            { cmd: "UPDATE", act: "Modification" },
+            { cmd: "DELETE", act: "Suppression" },
+            { cmd: "INSERT INTO", act: "Ajout (Lignes)" },
+            { cmd: "WHERE", act: "Condition" },
+            { cmd: "ORDER BY", act: "Tri" }
+        ];
+
+        let flippedCards = [];
+        let matchedCount = 0;
+
+        function initMemory() {
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+            matchedCount = 0;
+            flippedCards = [];
+            
+            // Créer liste mélangée
+            let items = [];
+            pairs.forEach((p, index) => {
+                items.push({ text: p.cmd, pairId: index });
+                items.push({ text: p.act, pairId: index });
+            });
+            items.sort(() => Math.random() - 0.5);
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.pairId = item.pairId;
+                card.innerText = item.text;
+                card.onclick = () => flipCard(card);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipCard(card) {
+            if (flippedCards.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+                card.classList.add('flipped');
+                flippedCards.push(card);
+
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMatch, 800);
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [c1, c2] = flippedCards;
+            if (c1.dataset.pairId === c2.dataset.pairId) {
+                c1.classList.add('matched');
+                c2.classList.add('matched');
+                matchedCount++;
+                if (matchedCount === pairs.length) alert("🏆 Félicitations ! Tu maîtrises le vocabulaire LMD.");
+            } else {
+                c1.classList.remove('flipped');
+                c2.classList.remove('flipped');
+            }
+            flippedCards = [];
+        }
+
+        window.onload = () => {
+            initMemory();
+        };
+    </script>
+</body>
+</html>
+```
+

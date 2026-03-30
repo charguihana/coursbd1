@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade SQL : Nouveaux Défis</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --dark: #2d3436;
+            --light: #dfe6e9;
+            --error: #d63031;
+            --success: #00b894;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        .game-card { background: white; border-radius: 15px; padding: 25px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-bottom: 5px solid var(--primary); }
+        h1 { text-align: center; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+        h2 { color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
+        /* Jeu 1: Inspecteur */
+        .code-box { background: #2d3436; color: #fab1a0; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 1.1em; cursor: pointer; position: relative; }
+        .code-box span:hover { background: rgba(214, 48, 49, 0.3); border-radius: 3px; }
+
+        /* Jeu 2: Tri */
+        .drag-container { display: flex; justify-content: space-around; margin-top: 20px; }
+        .drop-zone { width: 45%; min-height: 150px; background: #f1f2f6; border: 2px dashed var(--primary); border-radius: 10px; padding: 10px; }
+        .item { background: var(--primary); color: white; padding: 8px; margin: 5px; border-radius: 5px; cursor: move; text-align: center; font-size: 0.9em; }
+
+        /* Jeu 3: Quiz Rapide */
+        .quiz-btn { background: white; border: 2px solid var(--secondary); color: var(--dark); padding: 10px 20px; border-radius: 25px; cursor: pointer; margin: 5px; transition: 0.3s; font-weight: bold; }
+        .quiz-btn:hover { background: var(--secondary); color: white; }
+
+        #feedback { font-weight: bold; text-align: center; margin-top: 15px; height: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎮 SQL GAME CENTER</h1>
+
+    <!-- JEU 1: L'INSPECTEUR DE SYNTAXE -->
+    <div class="game-card">
+        <h2>🔍 Jeu 1 : L'Inspecteur de Code</h2>
+        <p>Une erreur s'est glissée dans cette requête SQL de mise à jour (TP2). Cliquez sur le mot qui contient l'erreur !</p>
+        <div class="code-box" id="code-inspector">
+            <span onclick="checkError(false)">UPDATE</span> 
+            <span onclick="checkError(false)">chambre</span> 
+            <span onclick="checkError(false)">SET</span> 
+            <span onclick="checkError(false)">Prix</span> 
+            <span onclick="checkError(false)">=</span> 
+            <span onclick="checkError(false)">Prix</span> 
+            <span onclick="checkError(false)">-</span> 
+            <span onclick="checkError(false)">10</span> 
+            <span onclick="checkError(false)">WHERE</span> 
+            <span onclick="checkError(false)">Type</span> 
+            <span onclick="checkError(false)">=</span> 
+            <span onclick="checkError(true)">Single</span>
+            <span onclick="checkError(false)">;</span>
+        </div>
+        <p id="inspect-feedback"></p>
+        <small><i>Indice : Les chaînes de caractères (VARCHAR) ont besoin de quelque chose...</i></small>
+    </div>
+
+    <!-- JEU 2: LE TRI LDD vs LMD -->
+    <div class="game-card">
+        <h2>↔️ Jeu 2 : Définition (LDD) ou Manipulation (LMD) ?</h2>
+        <p>Glissez les commandes dans la bonne catégorie selon les fonctions du SGBD.</p>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;" id="source-items">
+            <div class="item" draggable="true" ondragstart="drag(event)" id="i1">CREATE TABLE</div>
+            <div class="item" draggable="true" ondragstart="drag(event)" id="i2">INSERT INTO</div>
+            <div class="item" draggable="true" ondragstart="drag(event)" id="i3">ALTER TABLE</div>
+            <div class="item" draggable="true" ondragstart="drag(event)" id="i4">UPDATE</div>
+            <div class="item" draggable="true" ondragstart="drag(event)" id="i5">DELETE</div>
+            <div class="item" draggable="true" ondragstart="drag(event)" id="i6">DROP COLUMN</div>
+        </div>
+        <div class="drag-container">
+            <div class="drop-zone" ondrop="drop(event, 'LDD')" ondragover="allowDrop(event)">
+                <h3 style="text-align: center; color: var(--primary);">STRUCTURE (LDD)</h3>
+            </div>
+            <div class="drop-zone" ondrop="drop(event, 'LMD')" ondragover="allowDrop(event)">
+                <h3 style="text-align: center; color: var(--secondary);">DONNÉES (LMD)</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- JEU 3: LE DÉFI DES 4 MOTS -->
+    <div class="game-card">
+        <h2>⚡ Jeu 3 : Le Défi de l'Architecture</h2>
+        <p>Lequel de ces mots ne fait <b>PAS</b> partie de la définition d'une Base de Données selon le cours ?</p>
+        <div style="text-align: center;">
+            <button class="quiz-btn" onclick="checkArch(false)">Structuré</button>
+            <button class="quiz-btn" onclick="checkArch(true)">Redondant</button>
+            <button class="quiz-btn" onclick="checkArch(false)">Persistant</button>
+            <button class="quiz-btn" onclick="checkArch(false)">Exhaustif</button>
+        </div>
+        <p id="arch-feedback" style="text-align: center; font-weight: bold;"></p>
+    </div>
+
+</div>
+
+<script>
+    // Logic Jeu 1
+    function checkError(isCorrect) {
+        const fb = document.getElementById('inspect-feedback');
+        if(isCorrect) {
+            fb.innerText = "✅ Bravo ! 'Single' est une valeur texte, elle doit être entre guillemets : 'Single'.";
+            fb.style.color = "var(--success)";
+        } else {
+            fb.innerText = "❌ Ce mot est correct. Cherchez ailleurs !";
+            fb.style.color = "var(--error)";
+        }
+    }
+
+    // Logic Jeu 2
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+    function drop(ev, category) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.setData("text", ev.target.id); // Not needed but standard
+        var id = ev.dataTransfer.getData("text");
+        var el = document.getElementById(id);
+        
+        const ldd = ["i1", "i3", "i6"];
+        const lmd = ["i2", "i4", "i5"];
+
+        if((category === 'LDD' && ldd.includes(id)) || (category === 'LMD' && lmd.includes(id))) {
+            ev.target.appendChild(el);
+            el.style.background = "var(--success)";
+        } else {
+            alert("❌ Mauvaise catégorie ! Réfléchissez : est-ce qu'on modifie la structure ou le contenu ?");
+        }
+    }
+
+    // Logic Jeu 3
+    function checkArch(isWrong) {
+        const fb = document.getElementById('arch-feedback');
+        if(isWrong) {
+            fb.innerText = "🏆 Exact ! Une BD doit être NON REDONDANTE.";
+            fb.style.color = "var(--success)";
+        } else {
+            fb.innerText = "❌ Non, ce mot fait bien partie de la définition !";
+            fb.style.color = "var(--error)";
+        }
+    }
+</script>
+
+</body>
+</html>
+

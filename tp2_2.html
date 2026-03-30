@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Correction Devoir Poste Frontalier</title>
+<link rel="stylesheet" href="style.css">
+<style>
+
+/* ===== STYLE GENERAL ===== */
+
+/*body{
+font-family:Segoe UI;
+background:linear-gradient(135deg,#e3f2fd,#ffffff);
+padding:30px;
+}*/
+
+h1{
+text-align:center;
+color:#333;
+}
+
+/* ===== CARD EXERCICE ===== */
+
+.card{
+background:white;
+margin:25px auto;
+padding:20px;
+width:80%;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+
+opacity:0;
+transform:translateY(60px);
+transition:0.7s;
+}
+
+.card.show{
+opacity:1;
+transform:translateY(0);
+}
+
+/* bouton */
+
+button{
+background:#2196F3;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* correction */
+
+.correction{
+max-height:0;
+overflow:hidden;
+transition:0.6s;
+background:#e8f5e9;
+margin-top:15px;
+padding:0 15px;
+border-left:6px solid #2911f9a4;
+}
+
+.correction.open{
+padding:15px;
+max-height:400px;
+}
+
+/* explication */
+
+.explication{
+background:#fff3cd;
+padding:10px;
+margin-top:10px;
+border-left:5px solid orange;
+}
+
+/* code sql */
+
+code{
+background:#222;
+color:#00ffcc;
+display:block;
+padding:10px;
+margin-top:10px;
+}
+
+</style>
+
+<script>
+
+/* afficher correction avec animation */
+
+function correction(id){
+
+let zone=document.getElementById(id);
+
+zone.classList.toggle("open");
+
+}
+
+/* animation apparition scroll */
+
+window.addEventListener("scroll",()=>{
+
+document.querySelectorAll(".card").forEach(card=>{
+
+let pos=card.getBoundingClientRect().top;
+
+if(pos<window.innerHeight-100){
+card.classList.add("show");
+}
+
+});
+
+});
+
+</script>
+</head>
+
+<body>
+
+<h1>📘 Correction TP2 — Poste Frontalier</h1>
+
+<!-- Q1 -->
+<div class="card">
+
+<h3>Q1 : Ajouter contrainte Genre</h3>
+
+<button onclick="correction('c1')">
+Afficher Correction
+</button>
+
+<div id="c1" class="correction">
+
+<code>
+ALTER TABLE voyageur
+ADD CONSTRAINT v CHECK(Genre='M' OR Genre='F');
+</code>
+
+<div class="explication">
+CHECK permet de contrôler les valeurs autorisées dans la colonne Genre.
+</div>
+
+</div>
+</div>
+
+<!-- Q2 -->
+<div class="card">
+
+<h3>Q2 : Modifier type Frontière</h3>
+
+<button onclick="correction('c2')">
+Afficher Correction
+</button>
+
+<div id="c2" class="correction">
+
+<code>
+ALTER TABLE poste
+CHANGE front Frontiere CHAR(2);
+</code>
+
+<div class="explication">
+CHANGE modifie le nom ou le type d’un attribut.
+</div>
+
+</div>
+</div>
+
+<!-- R1 -->
+<div class="card">
+
+<h3>R1 : Afficher postes commerciaux</h3>
+
+<button onclick="correction('c3')">Correction</button>
+
+<div id="c3" class="correction">
+
+<code>
+SELECT CodeP, Nom, Gouvernorat
+FROM poste
+WHERE Categorie='C';
+</code>
+
+<div class="explication">
+WHERE filtre les postes ayant catégorie commerciale.
+</div>
+
+</div>
+</div>
+
+<!-- R2 -->
+<div class="card">
+
+<h3>R2 : Gouvernorat contenant 'd'</h3>
+
+<button onclick="correction('c4')">Correction</button>
+
+<div id="c4" class="correction">
+
+<code>
+SELECT * FROM poste
+WHERE Gouvernorat LIKE '%d%';
+</code>
+
+<div class="explication">
+LIKE permet la recherche partielle de texte.
+</div>
+
+</div>
+</div>
+
+<!-- R3 -->
+<div class="card">
+
+<h3>R3 : Voyageurs sortis avant Février 2024</h3>
+
+<button onclick="correction('c5')">Correction</button>
+
+<div id="c5" class="correction">
+
+<code>
+SELECT v.NomPrenom,v.Nationalite,v.Genre
+FROM voyageur v, passage p
+WHERE v.IdVoy=p.IdVoy
+AND YEAR(p.Date)=2024
+AND MONTH(p.Date)<2;
+</code>
+
+<div class="explication">
+Jointure entre voyageur et passage puis filtrage date.
+</div>
+
+</div>
+</div>
+
+<!-- R4 -->
+<div class="card">
+
+<h3>R4 : Nombre voyageurs sortants</h3>
+
+<button onclick="correction('c6')">Correction</button>
+
+<div id="c6" class="correction">
+
+<code>
+SELECT COUNT(*) nb_sortant
+FROM passage
+WHERE Acces='S';
+</code>
+
+<div class="explication">
+COUNT(*) calcule le nombre total des sorties.
+</div>
+
+</div>
+</div>
+
+<!-- R5 -->
+<div class="card">
+
+<h3>R5 : Ajouter 5000 m²</h3>
+
+<button onclick="correction('c7')">Correction</button>
+
+<div id="c7" class="correction">
+
+<code>
+UPDATE poste
+SET superficie = superficie + 5000
+WHERE superficie BETWEEN 10000 AND 50000;
+</code>
+
+<div class="explication">
+UPDATE modifie les valeurs existantes selon condition.
+</div>
+
+</div>
+</div>
+
+<!-- R6 -->
+<div class="card">
+
+<h3>R6 : Trier voyageurs</h3>
+
+<button onclick="correction('c8')">Correction</button>
+
+<div id="c8" class="correction">
+
+<code>
+SELECT * FROM voyageur
+ORDER BY NomPrenom ASC;
+</code>
+
+<div class="explication">
+ORDER BY permet le tri alphabétique.
+</div>
+
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+/* ===================== RESET ===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ===================== BODY ===================== */
+body {
+  height: 100vh;
+  background-image: url('images/bd6.png');
+  background-size: cover;
+  background-position: center;
+  color: #111;
+}
+
+/* ===================== HEADER ===================== */
+header {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0,64,128,0.8);
+  color: white;border-radius: 15px;
+}
+
+/* ===================== CONTAINER ===================== */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.85);
+  border-radius: 15px;
+  padding: 20px;
+  width: 500px; /* يحدد عرض الكروت لتكون بجانب بعضهم */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Hover effect */
+.card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+/* ===================== TITLES ===================== */
+h1, h2, h3 {
+  color: #fbaa13;
+  margin-bottom: 10px;
+}
+
+/* ===================== TABLE ===================== */
+table {
+  width: 70%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+ /* border: 1px solid #aaa;*/
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background: #e6f0ff;
+}
+
+/* ===================== INPUTS & SELECTS ===================== */
+input, select {
+  margin-top: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  width: 100%;
+}
+
+/* ===================== BUTTON ===================== */
+button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(45deg, #06b6d4, #7c3aed);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+footer{text-align: center;position: absolute;
+bottom: 0%;width: 100%;
+height: 50px;
+border: #1e3fe3 solid;}
+button:hover {
+  transform: scale(1.1);
+  background: linear-gradient(45deg, #7c3aed, #06b6d4);
+}
+
+/* ===================== RESULT FEEDBACK ===================== */
+.result {
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media(max-width:768px){
+  .card{ width:95%; }
+}
+/*==================== liste de definion==================*/
+.highlight { color: #e67e22; font-weight: bold; }
+/*====================boutons des lien jeux et quiz===============*/
+.link-game { display: inline-block; margin-top: 30px; padding: 15px 30px; background: #2793ae2b; color: rgba(56, 129, 88, 0.693); text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 1.2em; }
+        .link-game:hover { background: #217d9141; transform: scale(1.05); transition: 0.3s; }
+/*========= liste=========================*/
+.listcont{color: #eb183b9e;
+font-style: oblique;}
+ul{margin-left: 10px;}
+video{width: 700px;
+margin-left: 400px;}
+img{width: 80%;}
+.image1:hover{scale: 2.5;}
+#acc{background-color: #fbaa13;
+border-radius: 15px;color: aliceblue;font-size: larger;
+text-decoration: none;}

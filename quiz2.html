@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Séance 2 : Langage LDD (SQL)</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; color: #2c3e50; padding: 20px; max-width: 850px; margin: auto; }
+        .quiz-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #e67e22; border-bottom: 3px solid #e67e22; padding-bottom: 10px; }
+        .question-block { margin-top: 25px; padding: 15px; border-radius: 8px; background: #fdfdfd; border-left: 4px solid #3498db; }
+        .question-text { font-weight: bold; font-size: 1.1em; display: block; margin-bottom: 12px; }
+        .options-list { display: flex; flex-direction: column; gap: 10px; }
+        label { padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        label:hover { background: #e8f4f8; border-color: #3498db; }
+        input[type="radio"] { margin-right: 10px; }
+        .btn-check { width: 100%; padding: 15px; background: #e67e22; color: white; border: none; border-radius: 8px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; }
+        .btn-check:hover { background: #d35400; transform: scale(1.02); }
+        #result-area { margin-top: 25px; padding: 20px; border-radius: 8px; text-align: center; font-weight: bold; display: none; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .nav-buttons { text-align: center; margin-top: 25px; }
+        .link-btn { text-decoration: none; color: #3498db; font-weight: bold; padding: 10px 20px; border: 2px solid #3498db; border-radius: 50px; margin: 0 10px; }
+        .link-btn:hover { background: #3498db; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>📝 Quiz Séance 2 : Création et Modification (LDD)</h1>
+    <p style="text-align: center;">Testez votre maîtrise des commandes SQL <code>CREATE</code>, <code>ALTER</code> et <code>DROP</code>.</p>
+
+    <form id="lddQuiz">
+        <!-- Question 1: CREATE DATABASE -->
+        <div class="question-block">
+            <span class="question-text">1. Quelle commande permet de créer la base de données "Gestion_ELEVE" ?</span>
+            <div class="options-list">
+                <label><input type="radio" name="q1" value="a"> MAKE DATABASE Gestion_ELEVE ;</label>
+                <label><input type="radio" name="q1" value="b"> CREATE DATABASE Gestion_ELEVE ;</label>
+                <label><input type="radio" name="q1" value="c"> ADD DATABASE Gestion_ELEVE ;</label>
+            </div>
+        </div>
+
+        <!-- Question 2: NOT NULL -->
+        <div class="question-block">
+            <span class="question-text">2. Pour obliger la saisie du nom de l'élève, quelle contrainte utilise-t-on ?</span>
+            <div class="options-list">
+                <label><input type="radio" name="q2" value="a"> NOT EMPTY</label>
+                <label><input type="radio" name="q2" value="b"> PRIMARY KEY</label>
+                <label><input type="radio" name="q2" value="c"> NOT NULL</label>
+            </div>
+        </div>
+
+        <!-- Question 3: ALTER ADD -->
+        <div class="question-block">
+            <span class="question-text">3. Comment ajouter la colonne "coefficient" à la table MATIERE ?</span>
+            <div class="options-list">
+                <label><input type="radio" name="q3" value="a"> ALTER TABLE MATIERE ADD coefficient INT ;</label>
+                <label><input type="radio" name="q3" value="b"> UPDATE TABLE MATIERE ADD coefficient INT ;</label>
+                <label><input type="radio" name="q3" value="c"> MODIFY MATIERE ADD coefficient ;</label>
+            </div>
+        </div>
+
+        <!-- Question 4: CHECK Constraint -->
+        <div class="question-block">
+            <span class="question-text">4. Quelle commande assure que la note est comprise entre 0 et 20 ?</span>
+            <div class="options-list">
+                <label><input type="radio" name="q4" value="a"> CONSTRAINT note BETWEEN (0,20)</label>
+                <label><input type="radio" name="q4" value="b"> CHECK (note BETWEEN 0 AND 20)</label>
+                <label><input type="radio" name="q4" value="c"> VERIFY (note >= 0 AND note <= 20)</label>
+            </div>
+        </div>
+
+        <!-- Question 5: DROP COLUMN -->
+        <div class="question-block">
+            <span class="question-text">5. Quelle commande supprime la colonne "date_naiss" de la table ELEVE ?</span>
+            <div class="options-list">
+                <label><input type="radio" name="q5" value="a"> DELETE date_naiss FROM ELEVE ;</label>
+                <label><input type="radio" name="q5" value="b"> ALTER TABLE ELEVE DROP date_naiss ;</label>
+                <label><input type="radio" name="q5" value="c"> DROP TABLE date_naiss ;</label>
+            </div>
+        </div>
+
+        <button type="button" class="btn-check" onclick="checkLddQuiz()">Vérifier mes réponses</button>
+    </form>
+
+    <div id="result-area"></div>
+
+    <div class="nav-buttons">
+        <a href="seance2.html" class="link-btn">⬅️ Retour au cours</a>
+        <a href="jeux2.html" class="link-btn">🎮 Rejouer au Puzzle SQL</a>
+    </div>
+</div>
+
+<script>
+    function checkLddQuiz() {
+        const correctAnswers = { q1: "b", q2: "c", q3: "a", q4: "b", q5: "b" };
+        let userScore = 0;
+        const total = 5;
+        const form = document.getElementById('lddQuiz');
+        const resultDiv = document.getElementById('result-area');
+
+        for (let key in correctAnswers) {
+            const selected = form.querySelector(`input[name="${key}"]:checked`);
+            if (selected && selected.value === correctAnswers[key]) {
+                userScore++;
+            }
+        }
+
+        resultDiv.style.display = "block";
+        if (userScore === total) {
+            resultDiv.className = "success";
+            resultDiv.innerHTML = `🏆 Score Parfait : ${userScore}/${total} ! Tu es un expert en Langage LDD.`;
+        } else if (userScore >= 3) {
+            resultDiv.className = "success";
+            resultDiv.innerHTML = `Bravo ! Score : ${userScore}/${total}. Tu as bien compris l'essentiel.`;
+        } else {
+            resultDiv.className = "error";
+            resultDiv.innerHTML = `Score : ${userScore}/${total}. N'hésite pas à relire la séance 2 sur les commandes ALTER et CREATE.`;
+        }
+    }
+</script>
+
+</body>
+</html>
+```
+
